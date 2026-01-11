@@ -1,6 +1,6 @@
 // ✅ CHANGE THESE:
-const OWNER = "OWNER";
-const REPO  = "REPO";
+const OWNER = "Hperm68";
+const REPO  = "project-astro-pi-";
 
 // GitHub API paging
 const PER_PAGE = 20; // show 20 releases at a time
