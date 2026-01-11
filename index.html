@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Astro Pi Mission Space Lab – ISS Speed Estimate</title>
+  <meta name="description" content="Mission Space Lab project: capture two points 60s apart, compute distance with Haversine, estimate ISS speed, and save results." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="badge">ASTRO PI</div>
+        <div>
+          <div class="title">Mission Space Lab</div>
+          <div class="subtitle">ISS Speed Estimate (2-point method)</div>
+        </div>
+      </div>
+      <button id="themeBtn" class="btn ghost" type="button" aria-label="Toggle theme">🌗</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <div class="hero-left">
+        <h1>ISS Speed Estimate</h1>
+        <p class="lead">
+          This project estimates the speed of the International Space Station by recording two ISS
+          subpoint locations 60 seconds apart, computing the distance along Earth’s surface with the
+          Haversine formula, and dividing by time.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#results">See results</a>
+          <a class="btn" href="results.zip" download>Download outputs (results.zip)</a>
+        </div>
+        <p class="hint">
+          Tip: If you don’t have <code>results.zip</code> yet, download outputs from Astro Pi Replay Tool and
+          add it to this repo.
+        </p>
+      </div>
+
+      <div class="hero-right">
+        <div class="stat">
+          <div class="stat-label">Method</div>
+          <div class="stat-value">2 points / 60 seconds</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Formula</div>
+          <div class="stat-value">Haversine (great-circle)</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Output</div>
+          <div class="stat-value"><code>result.txt</code> (one line)</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>How it works</h2>
+        <ol class="steps">
+          <li>Speak: “plz move camera to windows in 15 sec”</li>
+          <li>Wait 20 seconds</li>
+          <li>Record Point A (lat/lon) + take Photo A</li>
+          <li>Wait 60 seconds</li>
+          <li>Speak again + wait 20 seconds</li>
+          <li>Record Point B (lat/lon) + take Photo B</li>
+          <li>Compute distance (Haversine) and speed = distance ÷ time</li>
+          <li>Write final speed to <code>result.txt</code> (one line)</li>
+        </ol>
+      </article>
+
+      <article class="card">
+        <h2>Why Haversine?</h2>
+        <p>
+          Earth is curved, so the shortest path between two latitude/longitude points is a
+          “great-circle” distance. The Haversine formula computes this distance accurately on a sphere.
+        </p>
+        <pre class="code"><code>speed = distance / time
+distance = R * c  (great-circle)</code></pre>
+      </article>
+    </section>
+
+    <section id="results" class="card">
+      <h2>Results</h2>
+      <p>
+        Replace the placeholders below with your latest run results from the Replay Tool:
+      </p>
+
+      <div class="results-grid">
+        <div class="result-box">
+          <div class="result-label">Final speed (km/s)</div>
+          <div id="speedValue" class="result-value">6.721</div>
+          <div class="result-note">This number is written to <code>result.txt</code> on one line.</div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-label">Runtime</div>
+          <div class="result-value">~3 min 27 s</div>
+          <div class="result-note">Must be under the Mission Space Lab limit.</div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-label">Files</div>
+          <div class="result-value small">
+            <ul>
+              <li><code>result.txt</code> (required)</li>
+              <li><code>details.txt</code> (extra data)</li>
+              <li><code>image_a.jpg</code>, <code>image_b.jpg</code> (if camera available)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="inline-actions">
+        <button id="editBtn" class="btn" type="button">Update speed on page</button>
+      </div>
+      <p class="hint">
+        This only updates the displayed number in your browser. To update the real website, commit changes to GitHub.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Code</h2>
+      <p>
+        The main program runs on Astro Pi and writes the final speed to <code>result.txt</code> (one line).
+        Extra data is saved to <code>details.txt</code>.
+      </p>
+      <p class="hint">
+        Put your <code>main.py</code> in the repo too if you want, or link it here.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Judge-ready explanation (copy/paste)</h2>
+      <p class="quote">
+        This program estimates the speed of the International Space Station by recording two positions 60 seconds apart.
+        Before each measurement, an audio message is played and the program waits to allow time for camera positioning.
+        The distance between the two positions is calculated using the Haversine formula, which accounts for the Earth’s
+        curvature. The final speed is calculated by dividing the distance by the time difference and written to a
+        single-line output file as required.
+      </p>
+    </section>
+
+    <footer class="footer">
+      <p>
+        Built for GitHub Pages • <span id="year"></span>
+      </p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
