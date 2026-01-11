@@ -4,136 +4,52 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Downloads</title>
-  <meta name="description" content="Download the latest release." />
-  <style>
-    :root{
-      --bg:#0b1220; --card:#111a2e; --text:#e8eefc; --muted:#a9b7dd;
-      --line:#223055; --primary:#4aa3ff;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:900px;margin:0 auto;padding:22px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:14px 0}
-    h1{margin:0 0 6px;font-size:28px}
-    .muted{color:var(--muted)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .btn{display:inline-flex;gap:8px;align-items:center;justify-content:center;
-      padding:10px 14px;border-radius:12px;border:1px solid var(--line);color:var(--text);
-      text-decoration:none;font-weight:700;background:transparent;cursor:pointer}
-    .btn.primary{background:var(--primary);border-color:transparent;color:#04101f}
-    code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-    pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,.22);border:1px solid var(--line);padding:12px;border-radius:12px}
-    .asset{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;margin:10px 0}
-    .asset small{color:var(--muted)}
-    .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--primary);border-radius:999px;animation:spin 1s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-  </style>
+  <meta name="description" content="Download all releases and assets." />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>Downloads</h1>
-      <div class="muted" id="repoLine">Loading… <span class="spinner"></span></div>
-      <div class="row" style="margin-top:12px">
-        <a class="btn" id="releasesBtn" href="#" target="_blank" rel="noreferrer">View all releases</a>
-        <a class="btn" id="repoBtn" href="#" target="_blank" rel="noreferrer">View repo</a>
-      </div>
-    </div>
-
-    <div class="card" id="statusCard">
-      <div id="status">Fetching latest release… <span class="spinner"></span></div>
-    </div>
-
-    <div class="card" id="releaseCard" style="display:none">
-      <div class="row" style="justify-content:space-between">
+  <header class="top">
+    <div class="wrap top-inner">
+      <div class="brand">
+        <div class="logo">⬇️</div>
         <div>
-          <div class="muted">Latest release</div>
-          <div style="font-size:22px;font-weight:900" id="tag"></div>
-          <div class="muted" id="published"></div>
-        </div>
-        <div class="row">
-          <a class="btn primary" id="zipBtn" href="#" target="_blank" rel="noreferrer">Source (.zip)</a>
-          <a class="btn" id="tarBtn" href="#" target="_blank" rel="noreferrer">Source (.tar.gz)</a>
+          <div class="title" id="siteTitle">Downloads</div>
+          <div class="subtitle" id="siteSubtitle">Loading repo…</div>
         </div>
       </div>
 
-      <h2 style="margin:16px 0 8px;font-size:18px">Assets</h2>
-      <div id="assets"></div>
-
-      <h2 style="margin:16px 0 8px;font-size:18px">Release notes</h2>
-      <pre id="notes">(none)</pre>
-    </div>
-
-    <div class="card" id="helpCard" style="display:none">
-      <div class="muted">
-        If you see “Not found” or rate-limit errors, make sure the repo is public and has at least one Release.
+      <div class="actions">
+        <a class="btn" id="repoLink" href="#" target="_blank" rel="noreferrer">Repo</a>
+        <a class="btn" id="releasesLink" href="#" target="_blank" rel="noreferrer">GitHub Releases</a>
+        <button class="btn ghost" id="themeBtn" type="button" title="Toggle theme">🌗</button>
       </div>
     </div>
-  </div>
+  </header>
 
-  <script>
-    // ✅ CHANGE THESE:
-    const OWNER = "OWNER";
-    const REPO  = "REPO";
+  <main class="wrap">
+    <section class="card">
+      <div class="row">
+        <input id="search" class="input" placeholder="Search releases (tag/title/body)…" />
+        <button id="refreshBtn" class="btn primary" type="button">Refresh</button>
+      </div>
+      <div class="muted small" id="status">Ready.</div>
+      <div class="muted small">
+        Tip: If your repo has lots of releases, click <b>Load more</b>.
+      </div>
+    </section>
 
-    const repoUrl = `https://github.com/${OWNER}/${REPO}`;
-    document.getElementById("repoLine").textContent = `${OWNER}/${REPO}`;
-    document.getElementById("repoBtn").href = repoUrl;
-    document.getElementById("releasesBtn").href = `${repoUrl}/releases`;
+    <section id="list" class="list"></section>
 
-    const status = (msg) => document.getElementById("status").textContent = msg;
+    <section class="card center">
+      <button id="loadMoreBtn" class="btn" type="button">Load more</button>
+      <div class="muted small" id="moreHint"></div>
+    </section>
 
-    async function main(){
-      try{
-        const api = `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
-        const res = await fetch(api, { headers: { "Accept": "application/vnd.github+json" }});
-        if(!res.ok){
-          status(`Could not fetch latest release (${res.status}).`);
-          document.getElementById("helpCard").style.display = "block";
-          return;
-        }
-        const r = await res.json();
+    <footer class="footer muted small">
+      Built for GitHub Pages • <span id="year"></span>
+    </footer>
+  </main>
 
-        document.getElementById("releaseCard").style.display = "block";
-        document.getElementById("statusCard").style.display = "none";
-
-        document.getElementById("tag").textContent = r.tag_name || "(no tag)";
-        const date = r.published_at ? new Date(r.published_at) : null;
-        document.getElementById("published").textContent =
-          date ? `Published: ${date.toLocaleString()}` : "";
-
-        document.getElementById("zipBtn").href = r.zipball_url || `${repoUrl}/archive/refs/heads/main.zip`;
-        document.getElementById("tarBtn").href = r.tarball_url || `${repoUrl}/archive/refs/heads/main.tar.gz`;
-
-        const assetsDiv = document.getElementById("assets");
-        assetsDiv.innerHTML = "";
-
-        const assets = Array.isArray(r.assets) ? r.assets : [];
-        if(assets.length === 0){
-          assetsDiv.innerHTML = `<div class="muted">No assets attached to this release.</div>`;
-        } else {
-          for(const a of assets){
-            const el = document.createElement("div");
-            el.className = "asset";
-            el.innerHTML = `
-              <div>
-                <div style="font-weight:800">${a.name}</div>
-                <small>${(a.size/1024/1024).toFixed(2)} MB • downloads: ${a.download_count}</small>
-              </div>
-              <a class="btn primary" href="${a.browser_download_url}" target="_blank" rel="noreferrer">Download</a>
-            `;
-            assetsDiv.appendChild(el);
-          }
-        }
-
-        document.getElementById("notes").textContent = (r.body && r.body.trim()) ? r.body : "(none)";
-      } catch(e){
-        status("Error loading release.");
-        document.getElementById("helpCard").style.display = "block";
-      }
-    }
-
-    main();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
